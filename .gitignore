@@ -1,2 +1,3 @@
 #Adding some ignore rules
 wp-config.php
+.DS_*
