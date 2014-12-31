@@ -684,11 +684,11 @@
 			/**
 			 * Handle selecting a sidebar to move to
 			 */
-			this.container.find( '.widget-area-select' ).on( 'click keypress', 'li', function( event ) {
+			this.container.find( '.widget-area-select' ).on( 'click keypress', 'li', function( e ) {
 				if ( event.type === 'keypress' && ( event.which !== 13 && event.which !== 32 ) ) {
 					return;
 				}
-				event.preventDefault();
+				e.preventDefault();
 				selectSidebarItem( $( this ) );
 			} );
 

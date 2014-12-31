@@ -126,8 +126,7 @@ class WP_Embed {
 	 *     @type int $height Height of the embed in pixels.
 	 * }
 	 * @param string $url The URL attempting to be embedded.
-	 * @return string|false The embed HTML on success, otherwise the original URL.
-	 *                      `->maybe_make_link()` can return false on failure.
+	 * @return string The embed HTML on success, otherwise the original URL.
 	 */
 	public function shortcode( $attr, $url = '' ) {
 		$post = get_post();

@@ -126,7 +126,6 @@ class WP_Filesystem_SSH2 extends WP_Filesystem_Base {
 	/**
 	 * @param string $command
 	 * @param bool $returnbool
-	 * @return bool|string
 	 */
 	public function run_command( $command, $returnbool = false) {
 
@@ -193,7 +192,7 @@ class WP_Filesystem_SSH2 extends WP_Filesystem_Base {
 
 	/**
 	 * @param string $dir
-	 * @return bool|string
+	 * @return bool
 	 */
 	public function chdir($dir) {
 		return $this->run_command('cd ' . $dir, true);
@@ -216,7 +215,7 @@ class WP_Filesystem_SSH2 extends WP_Filesystem_Base {
 	 * @param string $file
 	 * @param int $mode
 	 * @param bool $recursive
-	 * @return bool|string
+	 * @return bool
 	 */
 	public function chmod($file, $mode = false, $recursive = false) {
 		if ( ! $this->exists($file) )

@@ -949,6 +949,7 @@ function image_align_input_fields( $post, $checked = '' ) {
  * @return array
  */
 function image_size_input_fields( $post, $check = '' ) {
+
 	/**
 	 * Filter the names and labels of the default image sizes.
 	 *
@@ -964,53 +965,50 @@ function image_size_input_fields( $post, $check = '' ) {
 		'full'      => __( 'Full Size' )
 	) );
 
-	if ( empty( $check ) ) {
-		$check = get_user_setting('imgsize', 'medium');
-	}
-	$out = array();
+		if ( empty($check) )
+			$check = get_user_setting('imgsize', 'medium');
 
-	foreach ( $size_names as $size => $label ) {
-		$downsize = image_downsize( $post->ID, $size );
-		$checked = '';
+		foreach ( $size_names as $size => $label ) {
+			$downsize = image_downsize($post->ID, $size);
+			$checked = '';
 
-		// Is this size selectable?
-		$enabled = ( $downsize[3] || 'full' == $size );
-		$css_id = "image-size-{$size}-{$post->ID}";
+			// Is this size selectable?
+			$enabled = ( $downsize[3] || 'full' == $size );
+			$css_id = "image-size-{$size}-{$post->ID}";
 
-		// If this size is the default but that's not available, don't select it.
-		if ( $size == $check ) {
-			if ( $enabled ) {
+			// If this size is the default but that's not available, don't select it.
+			if ( $size == $check ) {
+				if ( $enabled )
+					$checked = " checked='checked'";
+				else
+					$check = '';
+			} elseif ( !$check && $enabled && 'thumbnail' != $size ) {
+				/*
+				 * If $check is not enabled, default to the first available size
+				 * that's bigger than a thumbnail.
+				 */
+				$check = $size;
 				$checked = " checked='checked'";
-			} else {
-				$check = '';
 			}
-		} elseif ( ! $check && $enabled && 'thumbnail' != $size ) {
-			/*
-			 * If $check is not enabled, default to the first available size
-			 * that's bigger than a thumbnail.
-			 */
-			$check = $size;
-			$checked = " checked='checked'";
+
+			$html = "<div class='image-size-item'><input type='radio' " . disabled( $enabled, false, false ) . "name='attachments[$post->ID][image-size]' id='{$css_id}' value='{$size}'$checked />";
+
+			$html .= "<label for='{$css_id}'>$label</label>";
+
+			// Only show the dimensions if that choice is available.
+			if ( $enabled )
+				$html .= " <label for='{$css_id}' class='help'>" . sprintf( "(%d&nbsp;&times;&nbsp;%d)", $downsize[1], $downsize[2] ). "</label>";
+
+			$html .= '</div>';
+
+			$out[] = $html;
 		}
 
-		$html = "<div class='image-size-item'><input type='radio' " . disabled( $enabled, false, false ) . "name='attachments[$post->ID][image-size]' id='{$css_id}' value='{$size}'$checked />";
-
-		$html .= "<label for='{$css_id}'>$label</label>";
-
-		// Only show the dimensions if that choice is available.
-		if ( $enabled ) {
-			$html .= " <label for='{$css_id}' class='help'>" . sprintf( "(%d&nbsp;&times;&nbsp;%d)", $downsize[1], $downsize[2] ). "</label>";
-		}
-		$html .= '</div>';
-
-		$out[] = $html;
-	}
-
-	return array(
-		'label' => __( 'Size' ),
-		'input' => 'html',
-		'html'  => join( "\n", $out ),
-	);
+		return array(
+			'label' => __('Size'),
+			'input' => 'html',
+			'html'  => join("\n", $out),
+		);
 }
 
 /**

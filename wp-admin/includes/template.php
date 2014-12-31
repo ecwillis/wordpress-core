@@ -301,14 +301,11 @@ function wp_popular_terms_checklist( $taxonomy, $default = 0, $number = 10, $ech
 function wp_link_category_checklist( $link_id = 0 ) {
 	$default = 1;
 
-	$checked_categories = array();
-
 	if ( $link_id ) {
 		$checked_categories = wp_get_link_cats( $link_id );
 		// No selected categories, strange
-		if ( ! count( $checked_categories ) ) {
+		if ( ! count( $checked_categories ) )
 			$checked_categories[] = $default;
-		}
 	} else {
 		$checked_categories[] = $default;
 	}
@@ -710,10 +707,10 @@ function meta_form( $post = null ) {
  *
  * @since 0.71
  *
- * @param int|bool $edit      Accepts 1|true for editing the date, 0|false for adding the date.
- * @param int|bool $for_post  Accepts 1|true for applying the date to a post, 0|false for a comment.
- * @param int      $tab_index The tabindex attribute to add. Default 0.
- * @param int|bool $multi     Optional. Whether the additional fields and buttons should be added.
+ * @param int $edit      Accepts 1|true for editing the date, 0|false for adding the date.
+ * @param int $for_post  Accepts 1|true for applying the date to a post, 0|false for a comment.
+ * @param int $tab_index The tabindex attribute to add. Default 0.
+ * @param int $multi     Optional. Whether the additional fields and buttons should be added.
  *                            Default 0|false.
  */
 function touch_time( $edit = 1, $for_post = 1, $tab_index = 0, $multi = 0 ) {

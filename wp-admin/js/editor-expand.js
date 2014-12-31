@@ -682,13 +682,7 @@
 		}
 
 		function off() {
-			var height = parseInt( window.getUserSetting( 'ed_size', 300 ), 10 );
-
-			if ( height < 50 ) {
-				height = 50;
-			} else if ( height > 5000 ) {
-				height = 5000;
-			}
+			var height = window.getUserSetting('ed_size');
 
 			// Scroll to the top when triggering this from JS.
 			// Ensures toolbars are reset properly.
