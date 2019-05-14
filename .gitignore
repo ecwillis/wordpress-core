@@ -1,5 +1,4 @@
 #Adding some ignore rules
-wp-config.php
 wp-content
 .htaccess
 .DS_*
