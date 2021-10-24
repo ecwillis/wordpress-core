@@ -16,7 +16,7 @@ if ( ! current_user_can( 'upload_files' ) ) {
 $mode  = get_user_option( 'media_library_mode', get_current_user_id() ) ? get_user_option( 'media_library_mode', get_current_user_id() ) : 'grid';
 $modes = array( 'grid', 'list' );
 
-if ( isset( $_GET['mode'] ) && in_array( $_GET['mode'], $modes ) ) {
+if ( isset( $_GET['mode'] ) && in_array( $_GET['mode'], $modes, true ) ) {
 	$mode = $_GET['mode'];
 	update_user_option( get_current_user_id(), 'media_library_mode', $mode );
 }
@@ -34,7 +34,7 @@ if ( 'grid' === $mode ) {
 	$vars   = wp_edit_attachments_query_vars( $q );
 	$ignore = array( 'mode', 'post_type', 'post_status', 'posts_per_page' );
 	foreach ( $vars as $key => $value ) {
-		if ( ! $value || in_array( $key, $ignore ) ) {
+		if ( ! $value || in_array( $key, $ignore, true ) ) {
 			unset( $vars[ $key ] );
 		}
 	}
@@ -87,8 +87,8 @@ if ( 'grid' === $mode ) {
 		<?php
 		if ( current_user_can( 'upload_files' ) ) {
 			?>
-			<a href="<?php echo admin_url( 'media-new.php' ); ?>" class="page-title-action aria-button-if-js"><?php echo esc_html_x( 'Add New', 'file' ); ?></a>
-								<?php
+			<a href="<?php echo esc_url( admin_url( 'media-new.php' ) ); ?>" class="page-title-action aria-button-if-js"><?php echo esc_html_x( 'Add New', 'file' ); ?></a>
+			<?php
 		}
 		?>
 
@@ -120,7 +120,9 @@ $doaction = $wp_list_table->current_action();
 if ( $doaction ) {
 	check_admin_referer( 'bulk-media' );
 
-	if ( 'delete_all' == $doaction ) {
+	$post_ids = array();
+
+	if ( 'delete_all' === $doaction ) {
 		$post_ids = $wpdb->get_col( "SELECT ID FROM $wpdb->posts WHERE post_type='attachment' AND post_status = 'trash'" );
 		$doaction = 'delete';
 	} elseif ( isset( $_REQUEST['media'] ) ) {
@@ -147,7 +149,7 @@ if ( $doaction ) {
 			break;
 
 		case 'trash':
-			if ( ! isset( $post_ids ) ) {
+			if ( empty( $post_ids ) ) {
 				break;
 			}
 			foreach ( (array) $post_ids as $post_id ) {
@@ -156,19 +158,19 @@ if ( $doaction ) {
 				}
 
 				if ( ! wp_trash_post( $post_id ) ) {
-					wp_die( __( 'Error in moving to Trash.' ) );
+					wp_die( __( 'Error in moving the item to Trash.' ) );
 				}
 			}
 			$location = add_query_arg(
 				array(
 					'trashed' => count( $post_ids ),
-					'ids'     => join( ',', $post_ids ),
+					'ids'     => implode( ',', $post_ids ),
 				),
 				$location
 			);
 			break;
 		case 'untrash':
-			if ( ! isset( $post_ids ) ) {
+			if ( empty( $post_ids ) ) {
 				break;
 			}
 			foreach ( (array) $post_ids as $post_id ) {
@@ -177,13 +179,13 @@ if ( $doaction ) {
 				}
 
 				if ( ! wp_untrash_post( $post_id ) ) {
-					wp_die( __( 'Error in restoring from Trash.' ) );
+					wp_die( __( 'Error in restoring the item from Trash.' ) );
 				}
 			}
 			$location = add_query_arg( 'untrashed', count( $post_ids ), $location );
 			break;
 		case 'delete':
-			if ( ! isset( $post_ids ) ) {
+			if ( empty( $post_ids ) ) {
 				break;
 			}
 			foreach ( (array) $post_ids as $post_id_del ) {
@@ -192,7 +194,7 @@ if ( $doaction ) {
 				}
 
 				if ( ! wp_delete_attachment( $post_id_del ) ) {
-					wp_die( __( 'Error in deleting.' ) );
+					wp_die( __( 'Error in deleting the attachment.' ) );
 				}
 			}
 			$location = add_query_arg( 'deleted', count( $post_ids ), $location );
@@ -270,13 +272,18 @@ require_once ABSPATH . 'wp-admin/admin-header.php';
 <?php
 if ( current_user_can( 'upload_files' ) ) {
 	?>
-	<a href="<?php echo admin_url( 'media-new.php' ); ?>" class="page-title-action"><?php echo esc_html_x( 'Add New', 'file' ); ?></a>
+	<a href="<?php echo esc_url( admin_url( 'media-new.php' ) ); ?>" class="page-title-action"><?php echo esc_html_x( 'Add New', 'file' ); ?></a>
 						<?php
 }
 
 if ( isset( $_REQUEST['s'] ) && strlen( $_REQUEST['s'] ) ) {
-	/* translators: %s: Search query. */
-	printf( '<span class="subtitle">' . __( 'Search results for &#8220;%s&#8221;' ) . '</span>', get_search_query() );
+	echo '<span class="subtitle">';
+	printf(
+		/* translators: %s: Search query. */
+		__( 'Search results for: %s' ),
+		'<strong>' . get_search_query() . '</strong>'
+	);
+	echo '</span>';
 }
 ?>
 
